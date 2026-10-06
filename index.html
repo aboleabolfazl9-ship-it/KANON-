@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <!-- تنظیمات پیشرفته ویوپورت برای اپلیکیشن‌های موبایل (حذف زوم و تنظیم ناچ گوشی) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#071216">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>اپلیکیشن اختصاصی کانون فرهنگی</title>
+    
+    <!-- پیش‌بارگذاری فونت برای سرعت بالا (Performance) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+
+    <!-- ========================================================================== -->
+    <!-- شروع موتور CSS (استایل‌های سنگین و بیس اپلیکیشن)                          -->
+    <!-- ========================================================================== -->
+    <style>
+        /* --------------------------------------------------------------------------
+           بخش اول: معماری متغیرهای سراسری (Design System)
+           -------------------------------------------------------------------------- */
+        :root {
+            /* پالت رنگی تاریک و حرفه‌ای اپلیکیشن */
+            --color-bg-body: #020507;        /* رنگ بک‌گراند بیرون اپلیکیشن (برای دسکتاپ) */
+            --color-bg-app: #071216;         /* رنگ بک‌گراند اصلی محیط اپلیکیشن */
+            --color-bg-card: #10242b;        /* رنگ پایه‌ای کارت‌ها و باکس‌ها */
+            --color-bg-card-hover: #16323c;  /* رنگ کارت‌ها در حالت لمس/هاور */
+            --color-bg-nav: rgba(10, 24, 29, 0.92); /* رنگ منوی پایین (افکت شیشه‌ای) */
+            
+            /* رنگ‌های اکتیو و سازمانی */
+            --color-primary: #FF6B00;        /* نارنجی اصلی */
+            --color-primary-glow: rgba(255, 107, 0, 0.35); /* هاله نور نارنجی */
+            --color-secondary: #FF3D00;      /* قرمز-نارنجی (برای مدال‌ها و هشدارها) */
+            --color-accent: #00d2ff;         /* آبی یخی برای تضاد و زیبایی */
+            
+            /* سیستم رنگ متن و تایپوگرافی */
+            --color-text-title: #ffffff;     /* رنگ تیترهای درشت */
+            --color-text-main: #e0e0e0;      /* رنگ متن‌های معمولی */
+            --color-text-muted: #8ca3ab;     /* رنگ متن‌های فرعی و کم‌رنگ */
+            --color-text-dark: #000000;      /* رنگ متن روی پس‌زمینه‌های روشن (مثل نارنجی) */
+            
+            /* خطوط و بوردرها (Glassmorphism borders) */
+            --border-light: rgba(255, 255, 255, 0.05);
+            --border-main: #1e3a44;
+            --border-glow: rgba(255, 107, 0, 0.4);
+            
+            /* سیستم سایه‌زنی حرفه‌ای 3D (Shadow System) */
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
+            --shadow-md: 0 5px 15px rgba(0,0,0,0.6);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.8);
+            --shadow-orange: 0 8px 25px var(--color-primary-glow);
+            --shadow-inset: inset 0 2px 5px rgba(0,0,0,0.5);
+            
+            /* منحنی‌های انیمیشن (Bezier Curves برای نرمی اپلیکیشن iOS) */
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            
+            /* لایه‌بندی دقیق (Z-Index Engine) */
+            --z-index-base: 10;
+            --z-index-card: 20;
+            --z-index-nav: 1000;
+            --z-index-modal: 2000;
+            --z-index-toast: 3000;
+            
+            /* ابعاد، فاصله‌ها و گردی‌ها */
+            --app-max-width: 428px; /* سایز استاندارد آیفون پرو مکس */
+            --nav-height: 85px;
+            --border-radius-sm: 8px;
+            --border-radius-md: 16px;
+            --border-radius-lg: 24px;
+            --border-radius-pill: 999px;
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش دوم: ریست کردن کدهای مخرب مرورگر و تنظیمات پایه
+           -------------------------------------------------------------------------- */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--color-bg-body);
+            color: var(--color-text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* جلوگیری از اسکرول کل صفحه در مرورگر کامپیوتر */
+            -webkit-tap-highlight-color: transparent;
+            user-select: none; /* جلوگیری از انتخاب شدن متن‌ها مثل اپلیکیشن‌های Native */
+            touch-action: pan-y; /* مدیریت تاچ برای جلوگیری از باگ‌های موبایلی */
+        }
+
+        /* استایل‌دهی اختصاصی به اسکرول‌بار مرورگر (فقط برای کامپیوتر دیده میشه) */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg-app);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-main);
+            border-radius: var(--border-radius-pill);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-text-muted);
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش سوم: قاب اصلی اپلیکیشن (App Container Engine)
+           -------------------------------------------------------------------------- */
+        #app-root {
+            width: 100%;
+            max-width: var(--app-max-width);
+            height: 100vh;
+            height: 100dvh; /* پشتیبانی از موبایل‌های جدید که نوار پایین دارن */
+            background-color: var(--color-bg-app);
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* شبیه‌سازی قاب آیفون برای زمانی که با کامپیوتر سایت رو باز میکنی */
+        @media (min-width: 480px) {
+            #app-root {
+                height: 90vh;
+                max-height: 900px;
+                border-radius: 40px; /* گردی لبه گوشی */
+                border: 10px solid #1c1c1e; /* رنگ قاب گوشی */
+                box-shadow: 0 0 0 2px #3a3a3c, 0 30px 60px rgba(0,0,0,0.9); /* سایه 3D گوشی */
+            }
+            
+            /* ساخت ناچ (Notch) آیفون بالای صفحه */
+            #app-root::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 140px;
+                height: 28px;
+                background-color: #1c1c1e;
+                border-bottom-left-radius: 18px;
+                border-bottom-right-radius: 18px;
+                z-index: 9999;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            }
+        }
+                /* --------------------------------------------------------------------------
+           بخش چهارم: سیستم انیمیشن‌های پیشرفته و کلیدهای فریم (Keyframes Engine)
+           -------------------------------------------------------------------------- */
+        
+        /* انیمیشن پالس و درخشش نور نارنجی دور المان‌های ویژه */
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 10px rgba(255, 107, 0, 0.2), 0 0 20px rgba(255, 107, 0, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(255, 107, 0, 0.6), 0 0 40px rgba(255, 107, 0, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(255, 107, 0, 0.2), 0 0 20px rgba(255, 107, 0, 0.1);
+            }
+        }
+
+        /* انیمیشن شناور بودن مجسمه‌ها و مدال‌ها (Floating Effect) */
+        @keyframes floatSubtle {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        /* انیمیشن ورود نرم صفحات از پایین به بالا */
+        @keyframes screenSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* انیمیشن رقص نور روی مدال‌ها (Shimmer Shine) */
+        @keyframes badgeShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* انیمیشن موج‌زدن دکمه موقع کلیک (Ripple) */
+        @keyframes buttonRipple {
+            0% { transform: scale(0); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* انیمیشن بارگذاری skeleton کارتها */
+        @keyframes skeletonLoading {
+            0% { background-color: #10242b; }
+            50% { background-color: #1a3843; }
+            100% { background-color: #10242b; }
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش پنجم: کلاس‌های کاربردی و افکت‌های شیشه‌ای (Glassmorphism & Utilities)
+           -------------------------------------------------------------------------- */
+        .glass-panel {
+            background: rgba(16, 36, 43, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(22, 50, 60, 0.8) 0%, rgba(10, 24, 29, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-main);
+            box-shadow: var(--shadow-md);
+        }
+
+        .text-gradient-orange {
+            background: linear-gradient(135deg, #FF8A00 0%, #FF3D00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #FFE259 0%, #FFA751 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glow-effect {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        .float-effect {
+            animation: floatSubtle 4s infinite ease-in-out;
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش ششم: مدیریت نمایش صفحات (Screen Layout Engine)
+           -------------------------------------------------------------------------- */
+        .app-view {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--nav-height) + 20px);
+            padding-top: 15px;
+            scroll-behavior: smooth;
+        }
+
+        .app-view.active-view {
+            display: flex;
+            animation: screenSlideUp var(--transition-normal) forwards;
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش هفتم: استایل هدر و بالای برنامه (Top Header System)
+           -------------------------------------------------------------------------- */
+        .app-header {
+            width: 100%;
+            padding: 25px 20px 15px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: var(--z-index-card);
+        }
+
+        .app-header .sub-title {
+            font-size: 13px;
+            color: var(--color-text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .app-header .main-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--color-primary);
+            text-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-header .header-badge {
+            background: rgba(255, 107, 0, 0.15);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: var(--border-radius-pill);
+            font-weight: 700;
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش هشتم: سیستم مدال‌ها و گیمیفیکیشن (3D Badges & Gamification)
+           -------------------------------------------------------------------------- */
+        .gamification-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 10px 20px 25px 20px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* خط زمینه دکوراتیو پشت مدال‌ها */
+        .gamification-container::before {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-main), var(--color-primary-glow), var(--border-main), transparent);
+            z-index: 1;
+        }
+
+        .stat-badge-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+            transition: transform var(--transition-bounce);
+        }
+
+        .stat-badge-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+        /* مدال وسطی (سکه) که بزرگتره */
+        .stat-badge-wrapper.featured {
+            transform: scale(1.18);
+            margin-bottom: 12px;
+        }
+
+        .stat-badge-wrapper.featured:hover {
+            transform: scale(1.23) translateY(-5px);
+        }
+
+        /* قاب آیکون مدال */
+        .badge-icon-holder {
+            width: 100%;
+            height: 75px;
+            background: var(--color-bg-card);
+            border: 2px solid var(--color-primary);
+            border-radius: 35px 35px 12px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.2);
+            transition: border-color var(--transition-fast);
+        }
+
+        .badge-icon-placeholder {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--color-text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: var(--color-text-muted);
+            margin-bottom: 4px;
+        }
+
+        /* برچسب اسم مدال زیر باکس (اعتبار، سکه، امتیاز) */
+        .badge-label-ribbon {
+            width: 90%;
+            background: linear-gradient(180deg, #FF7B1C 0%, #E05300 100%);
+            color: var(--color-text-title);
+            text-align: center;
+            padding: 4px 0;
+            border-radius: 4px 4px 10px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            margin-top: -8px;
+            z-index: 3;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            letter-spacing: 0.3px;
+        }
+
+        /* مقدار عددی زیر هر مدال */
+        .badge-numeric-value {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--color-text-title);
+            margin-top: 10px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-badge-wrapper.featured .badge-numeric-value {
+            color: var(--color-primary);
+            font-size: 17px;
+            text-shadow: 0 0 10px rgba(255, 107, 0, 0.4);
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش نهم: لیست رتبه‌بندی گروه‌ها (Leaderboard Cards)
+           -------------------------------------------------------------------------- */
+        .leaderboard-section {
+            padding: 10px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .section-title-bar h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--color-text-title);
+            position: relative;
+            padding-right: 12px;
+        }
+
+        .section-title-bar h3::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background-color: var(--color-primary);
+            border-radius: var(--border-radius-pill);
+            box-shadow: 0 0 8px var(--color-primary);
+        }
+
+        /* کارت تخصصی هر گروه */
+        .group-rank-card {
+            background: var(--color-bg-card);
+            border-radius: var(--border-radius-md);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-main);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+
+        .group-rank-card:hover {
+            background: var(--color-bg-card-hover);
+            border-color: var(--border-glow);
+            transform: translateX(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .group-rank-card:active {
+            transform: scale(0.98);
+        }
+
+        /* نوار رنگی عمودی سمت راست کارت */
+        .group-card-stripe {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--color-primary);
+            box-shadow: 0 0 10px var(--color-primary);
+        }
+
+        .group-card-stripe.secondary-stripe {
+            background: var(--color-text-muted);
+            box-shadow: none;
+        }
+
+        .group-card-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-right: 6px;
+        }
+
+        /* قاب آواتار عکس گروه */
+        .group-avatar-frame {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--color-bg-app);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .group-avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder-text {
+            font-size: 9px;
+            color: var(--color-text-muted);
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .group-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .group-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--color-text-title);
+        }
+
+        .group-subtext {
+            font-size: 11px;
+            color: var(--color-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* نشان رتبه در سمت چپ کارت */
+        .group-rank-badge {
+            background: var(--color-bg-app);
+            padding: 6px 16px;
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--color-text-title);
+            border: 1px solid var(--border-main);
+            box-shadow: var(--shadow-inset);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 70px;
+        }
+
+        .group-rank-badge.rank-1 {
+            border-color: rgba(255, 107, 0, 0.5);
+            color: var(--color-primary);
+            background: rgba(255, 107, 0, 0.08);
+        }
+                /* --------------------------------------------------------------------------
+           بخش دهم: استایل اختصاصی صفحه چت‌ها و گفت‌وگوها (Chat System)
+           -------------------------------------------------------------------------- */
+        .chat-header-tabs {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px 20px 20px;
+            gap: 10px;
+        }
+
+        .chat-tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            text-align: center;
+            background: var(--color-bg-card);
+            border: 1px solid var(--border-main);
+            border-radius: var(--border-radius-md);
+            color: var(--color-text-muted);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .chat-tab-btn.active {
+            background: var(--color-primary);
+            color: var(--color-text-dark);
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 15px var(--color-primary-glow);
+        }
+
+        .chat-list-container {
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-item-card {
+            background: var(--color-bg-card);
+            border-radius: var(--border-radius-md);
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border-main);
+            position: relative;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .chat-item-card:hover {
+            background: var(--color-bg-card-hover);
+            border-color: rgba(255, 107, 0, 0.3);
+        }
+
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .chat-avatar-wrapper {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .chat-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--color-bg-app);
+            border: 2px solid var(--border-main);
+            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: var(--color-text-muted);
+        }
+
+        /* نقطه وضعیت آنلاین بودن */
+        .online-status-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background-color: #00E676;
+            border: 2px solid var(--color-bg-card);
+            border-radius: 50%;
+        }
+
+        .chat-details-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .chat-user-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--color-text-title);
+        }
+
+        .chat-last-message {
+            font-size: 11px;
+            color: var(--color-text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-meta-side {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+
+        .chat-time-stamp {
+            font-size: 10px;
+            color: var(--color-text-muted);
+            direction: ltr;
+        }
+
+        /* بج پیام‌های خوانده‌نشده قرمز (+99) */
+        .unread-count-badge {
+            background: linear-gradient(135deg, #FF3D00 0%, #D32F2F 100%);
+            color: white;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 2px 7px;
+            border-radius: var(--border-radius-pill);
+            box-shadow: 0 2px 8px rgba(255, 61, 0, 0.5);
+            animation: pulseGlow 2s infinite;
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش یازدهم: استایل اختصاصی صفحه پروفایل شخصی (Profile & Medals)
+           -------------------------------------------------------------------------- */
+        .profile-hero-section {
+            position: relative;
+            width: 100%;
+            padding-bottom: 20px;
+        }
+
+        .profile-banner-cover {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(180deg, rgba(255,107,0,0.2) 0%, rgba(7,18,22,0) 100%), var(--color-bg-card);
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid var(--border-main);
+            position: relative;
+        }
+
+        .profile-avatar-overlay {
+            position: relative;
+            margin-top: -60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-main-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid var(--color-bg-app);
+            background: var(--color-bg-card);
+            box-shadow: var(--shadow-lg), 0 0 20px var(--color-primary-glow);
+            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--color-text-muted);
+            z-index: 5;
+        }
+
+        /* مدال‌های سه‌گانه کاربر (الماس، جنم، همت) */
+        .user-medals-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 20px 15px 20px;
+        }
+
+        .medal-card-item {
+            flex: 1;
+            background: var(--color-bg-card);
+            border: 1px solid var(--border-main);
+            border-radius: var(--border-radius-md);
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .medal-shield-icon {
+            width: 42px;
+            height: 48px;
+            background: linear-gradient(135deg, #FFE259 0%, #FFA751 100%);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: 900;
+            font-size: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+
+        .medal-badge-tag {
+            background: var(--color-primary);
+            color: black;
+            font-weight: 900;
+            font-size: 11px;
+            padding: 3px 12px;
+            border-radius: var(--border-radius-pill);
+            margin-top: -12px;
+            z-index: 2;
+        }
+
+        .medal-title-text {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--color-text-muted);
+            margin-top: 2px;
+        }
+
+        .profile-info-pill-box {
+            background: var(--color-bg-card);
+            border: 1px solid var(--border-main);
+            border-radius: var(--border-radius-md);
+            margin: 0 20px 15px 20px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش دوازدهم: استایل اختصاصی صفحه اعضای گروه (Group Detail System)
+           -------------------------------------------------------------------------- */
+        .group-hero-banner {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(0deg, var(--color-bg-app) 0%, rgba(7,18,22,0.4) 100%), var(--color-bg-card);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-main);
+        }
+
+        .group-banner-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--color-text-title);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .members-grid-container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .member-grid-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--border-main);
+            border-radius: var(--border-radius-md);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all var(--transition-fast);
+        }
+
+        .member-grid-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+
+        .member-small-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--color-bg-app);
+            border: 1px solid var(--border-main);
+            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: var(--color-text-muted);
+            flex-shrink: 0;
+        }
+
+        .member-card-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--color-text-title);
+            line-height: 1.3;
+        }
+
+        /* --------------------------------------------------------------------------
+           بخش سیزدهم: منوی ثابت پایین برنامه (App Bottom Navigation)
+           -------------------------------------------------------------------------- */
+        .app-navigation-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: var(--color-bg-nav);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px 28px 0 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px 10px 10px;
+            z-index: var(--z-index-nav);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+        }
+
+        .nav-tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 52px;
+            border-radius: var(--border-radius-md);
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: all var(--transition-bounce);
+            position: relative;
+        }
+
+        .nav-tab-icon {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: transform var(--transition-fast);
+        }
+
+        .nav-tab-label {
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 2px;
+            transition: color var(--transition-fast);
+        }
+
+        /* استایل تب فعال در منوی پایین */
+        .nav-tab-item.active-tab {
+            color: var(--color-text-dark);
+            background: var(--color-primary);
+            transform: translateY(-16px);
+            box-shadow: 0 8px 20px var(--color-primary-glow);
+            border-radius: var(--border-radius-md);
+        }
+
+        .nav-tab-item.active-tab .nav-tab-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-tab-item.active-tab .nav-tab-label {
+            color: var(--color-text-dark);
+            font-weight: 900;
+        }
+                /* کد حذف قاب گوشی و تمام صفحه شدن */
+        body {
+            background-color: var(--color-bg-app) !important;
+            align-items: stretch !important;
+        }
+
+        #app-root {
+            max-width: 100% !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        /* ========================================================================== */
+        /* کد اصلاحی نهایی: تنظیم فاصله‌گذاری دقیق مدال‌ها و اعداد                       */
+        /* ========================================================================== */
+        /* ========================================================================== */
+        /* سیستم تبدیل به وب‌سایت کاملاً دسکتاپی و پهن (کامل و بدون حالت گوشی)        */
+        /* ========================================================================== */
+        body {
+            background-color: var(--color-bg-app) !important;
+            display: block !important;
+            overflow-y: auto !important;
+        }
+
+        /* پهن شدن کل کانتینر اصلی روی تمام صفحه مانیتور */
+        #app-root {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background-color: var(--color-bg-app) !important;
+        }
+
+        #app-root::before { display: none !important; } /* حذف کامل ناچ گوشی */
+
+        /* عرض پهن و شیک دسکتاپی برای محتوای اصلی (پهن‌تر از تلگرام وب) */
+        .app-view {
+            max-width: 950px !important;
+            margin: 0 auto !important;
+            width: 100% !important;
+            padding: 20px 20px 120px 20px !important;
+        }
+
+        /* باز شدن مدال‌های بالای صفحه با فاصله شیک و استاندارد */
+        .gamification-container {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 40px !important; /* فاصله عریض بین مدال‌ها */
+            max-width: 600px !important;
+            margin: 20px auto 35px auto !important;
+            padding: 0 !important;
+        }
+
+        .stat-badge-wrapper {
+            width: 110px !important;
+            flex: none !important;
+        }
+
+        .badge-icon-holder {
+            width: 80px !important;
+            height: 85px !important;
+            margin: 0 auto !important;
+        }
+
+        .badge-label-ribbon {
+            width: 95px !important;
+            margin: -10px auto 0 auto !important;
+            font-size: 12px !important;
+        }
+
+        .badge-numeric-value {
+            font-size: 16px !important;
+            margin-top: 10px !important;
+            text-align: center !important;
+            width: 100% !important;
+        }
+
+        /* باز شدن دکمه‌های منوی پایین تا دیگه تو بغل هم نباشن */
+        .app-navigation-bar {
+            max-width: 850px !important; /* منوی عریض دسکتاپ */
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            padding: 0 40px 10px 40px !important;
+            justify-content: space-between !important; /* پخش شدن منظم دکمه‌ها */
+            border-radius: 20px 20px 0 0 !important;
+        }
+
+        .nav-tab-item {
+            width: 80px !important; /* جا داشتن هر دکمه برای نفس کشیدن */
+        }
+
+        /* تنظیم پنجره‌های پاپ‌آپ (چت و کیف پول) در سایز دسکتاپ */
+        #live-chat-modal, #wallet-modal {
+            max-width: 850px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            border-radius: 20px !important;
+            top: 20px !important;
+            bottom: 20px !important;
+            height: auto !important;
+        }
+                /* ========================================================================== */
+        /* استایل پنل مدیریت ادمین                                                     */
+        /* ========================================================================== */
+        #admin-login-overlay, #admin-panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 99999;
+            backdrop-filter: blur(15px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #admin-login-overlay.show, #admin-panel-overlay.show { display: flex; }
+
+        .admin-box {
+            background: #10242b;
+            border: 2px solid #FF6B00;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255,107,0,0.4);
+        }
+
+        .admin-dashboard {
+            background: #071216;
+            border: 2px solid #FF6B00;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 900px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .admin-dash-header {
+            background: #10242b;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e3a44;
+        }
+
+        .admin-dash-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .admin-nav {
+            width: 200px;
+            background: #0a181d;
+            border-left: 1px solid #1e3a44;
+            padding: 15px 0;
+        }
+
+        .admin-nav-btn {
+            padding: 12px 15px;
+            color: #8ca3ab;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: block;
+            width: 100%;
+            text-align: right;
+            border: none;
+            background: none;
+        }
+
+        .admin-nav-btn.active {
+            background: rgba(255,107,0,0.15);
+            color: #FF6B00;
+            border-right: 3px solid #FF6B00;
+        }
+
+        .admin-tab-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .admin-tab-content.active { display: block; }
+
+        .admin-field {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .admin-field label {
+            display: block;
+            color: #8ca3ab;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .admin-field input, .admin-field select {
+            width: 100%;
+            padding: 10px;
+            background: #10242b;
+            border: 1px solid #1e3a44;
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+        }
+
+        .admin-save-btn {
+            background: #FF6B00;
+            color: black;
+            font-weight: 900;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================================================== -->
+    <!-- قاب اصلی اپلیکیشن (App Root Framework)                                      -->
+    <!-- ========================================================================== -->
+    <div id="app-root">
+
+        <!-- ========================================================================== -->
+        <!-- صفحه ۱: خانه و رتبه‌بندی اصلی (Home View Engine)                            -->
+        <!-- ========================================================================== -->
+        <main id="view-home" class="app-view active-view" data-view-name="home">
+            
+            <!-- هدر بالایی صفحه خانه -->
+            <header class="app-header">
+                <span class="sub-title">تشکل نوجوانان - کانون فرهنگی</span>
+                <h1 class="main-title">
+                    حسینیه چهارده معصوم
+                    <span class="header-badge">فصل پاییز</span>
+                </h1>
+            </header>
+
+            <!-- بخش سه تایی امتیازات و گیمیفیکیشن (اعتبار، سکه، امتیاز) -->
+            <section class="gamification-container" aria-label="خلاصه امتیازات کاربر">
+                
+                <!-- مدال اول: اعتبار -->
+                <div class="stat-badge-wrapper" onclick="triggerBadgeAnimation(this)" data-badge-type="credit">
+                    <div class="badge-icon-holder">
+                        <div class="badge-icon-placeholder">
+                            <!-- آیکون SVG درخشان اعتبار -->
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="badge-label-ribbon">اعتبار</div>
+                    <div class="badge-numeric-value counter-element" data-target-value="1250">۰</div>
+                </div>
+
+                <!-- مدال دوم: سکه (مدال برجسته و اصلی در وسط) -->
+                <div class="stat-badge-wrapper featured glow-effect" onclick="triggerBadgeAnimation(this)" data-badge-type="coin">
+                    <div class="badge-icon-holder">
+                        <div class="badge-icon-placeholder" style="border-color: var(--color-primary);">
+                            <!-- آیکون SVG سکه -->
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <path d="M12 6v12M15 9.5a2.5 2.5 0 0 0-3-2.5H10.5a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 1 0 5H11a2.5 2.5 0 0 1-3-2.5"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="badge-label-ribbon">سکه</div>
+                    <div class="badge-numeric-value counter-element" data-target-value="3850">۰</div>
+                </div>
+
+                <!-- مدال سوم: امتیاز -->
+                <div class="stat-badge-wrapper" onclick="triggerBadgeAnimation(this)" data-badge-type="score">
+                    <div class="badge-icon-holder">
+                        <div class="badge-icon-placeholder">
+                            <!-- آیکون SVG امتیاز / مدال -->
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF8A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="6"></circle>
+                                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="badge-label-ribbon">امتیاز</div>
+                    <div class="badge-numeric-value counter-element" data-target-value="940">۰</div>
+                </div>
+
+            </section>
+
+            <!-- بخش جدول رتبه‌بندی گروه‌ها -->
+            <section class="leaderboard-section">
+                
+                <!-- نوار عنوان رتبه‌بندی -->
+                <div class="section-title-bar">
+                    <h3>رتبه‌بندی گروه‌های کانون</h3>
+                    <span style="font-size: 11px; color: var(--color-text-muted);">به‌روزرسانی لحظه‌ای</span>
+                </div>
+
+                <!-- دکمه‌های فیلتر سریع -->
+                <div class="chat-header-tabs" style="padding: 0 0 10px 0;">
+                    <button class="chat-tab-btn active" onclick="filterRankings('all', this)">همه گروه‌ها</button>
+                    <button class="chat-tab-btn" onclick="filterRankings('top', this)">برترین‌ها</button>
+                    <button class="chat-tab-btn" onclick="filterRankings('active', this)">فعال‌ترین‌ها</button>
+                </div>
+
+                <!-- کارت گروه ۱: شهید ماکان نصیری (رتبه اول) -->
+                <article class="group-rank-card" onclick="openGroupDetail('شهید ماکان نصیری', 1)">
+                    <div class="group-card-stripe"></div>
+                    <div class="group-card-content">
+                        <div class="group-avatar-frame">
+                            <!-- جا برای عکس گروه شهید ماکان نصیری -->
+                            <span class="avatar-placeholder-text">عکس<br>گروه</span>
+                        </div>
+                        <div class="group-details">
+                            <h4 class="group-name">شهید ماکان نصیری</h4>
+                            <div class="group-subtext">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                <span>۱۲ عضو فعال</span>
+                                <span style="margin: 0 4px;">•</span>
+                                <span style="color: var(--color-primary);">۳.۵۰ امتیاز</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-rank-badge rank-1">
+                        رتبه ۱
+                    </div>
+                </article>
+
+                <!-- کارت گروه ۲: شهید حسین فهمیده (رتبه دوم) -->
+                <article class="group-rank-card" onclick="openGroupDetail('شهید حسین فهمیده', 2)">
+                    <div class="group-card-stripe secondary-stripe"></div>
+                    <div class="group-card-content">
+                        <div class="group-avatar-frame">
+                            <!-- جا برای عکس گروه شهید حسین فهمیده -->
+                            <span class="avatar-placeholder-text">عکس<br>گروه</span>
+                        </div>
+                        <div class="group-details">
+                            <h4 class="group-name">شهید حسین فهمیده</h4>
+                            <div class="group-subtext">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                <span>۱۰ عضو فعال</span>
+                                <span style="margin: 0 4px;">•</span>
+                                <span style="color: var(--color-text-muted);">۳.۰۹ امتیاز</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-rank-badge">
+                        رتبه ۲
+                    </div>
+                </article>
+
+                <!-- کارت تستی گروه ۳: بچه های کربلا -->
+                <article class="group-rank-card" onclick="openGroupDetail('بچه‌های کربلا', 3)">
+                    <div class="group-card-stripe secondary-stripe" style="background: #2a414a;"></div>
+                    <div class="group-card-content">
+                        <div class="group-avatar-frame">
+                            <span class="avatar-placeholder-text">عکس<br>گروه</span>
+                        </div>
+                        <div class="group-details">
+                            <h4 class="group-name">بچه‌های کربلا</h4>
+                            <div class="group-subtext">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                <span>۸ عضو فعال</span>
+                                <span style="margin: 0 4px;">•</span>
+                                <span>۲.۶۷ امتیاز</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-rank-badge">
+                        رتبه ۳
+                    </div>
+                </article>
+
+            </section>
+
+        </main>
+                <!-- ========================================================================== -->
+        <!-- صفحه ۲: لیست چت‌ها و گفت‌وگوها (Chat View Engine)                            -->
+        <!-- ========================================================================== -->
+        <main id="view-chats" class="app-view" data-view-name="chats">
+            
+            <!-- هدر بالایی صفحه چت -->
+            <header class="app-header" style="padding-bottom: 10px;">
+                <h1 class="main-title">گفت‌وگوها</h1>
+                <span class="sub-title">پیام‌رسان داخلی کانون حسینیه</span>
+            </header>
+
+            <!-- تب‌های بالای چت (گفت‌وگوی جدید / کانال‌ها) -->
+            <div class="chat-header-tabs">
+                <button class="chat-tab-btn active" onclick="switchChatTab('all', this)">گفت‌وگوها</button>
+                <button class="chat-tab-btn" onclick="switchChatTab('channels', this)">کانال‌ها</button>
+                <button class="chat-tab-btn" onclick="switchChatTab('groups', this)" style="background: rgba(255,107,0,0.1); color: var(--color-primary); border-color: rgba(255,107,0,0.3);">گفت‌وگوی جدید +</button>
+            </div>
+
+            <!-- لیست تمام چت‌ها -->
+            <section class="chat-list-container">
+
+                <!-- چت ۱: بچه زرنگ (دارای ۹۹+ پیام) -->
+                <article class="chat-item-card" onclick="openChatConversation('بچه زرنگ')">
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-wrapper">
+                            <div class="chat-avatar-img">عکس</div>
+                            <span class="online-status-dot"></span>
+                        </div>
+                        <div class="chat-details-text">
+                            <h4 class="chat-user-name">بچه زرنگ</h4>
+                            <p class="chat-last-message">سلام! امشب چند دقیقه وقت بگذاریم و گزارش...</p>
+                        </div>
+                    </div>
+                    <div class="chat-meta-side">
+                        <span class="chat-time-stamp">۲۰:۰۰</span>
+                        <span class="unread-count-badge">+۹۹</span>
+                    </div>
+                </article>
+
+                <!-- چت ۲: گروه شهید ماکان نصیری -->
+                <article class="chat-item-card" onclick="openChatConversation('گروه شهید ماکان نصیری')" style="border-right: 3px solid var(--color-primary);">
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-wrapper">
+                            <div class="chat-avatar-img" style="border-color: var(--color-primary);">گروه</div>
+                            <span class="online-status-dot"></span>
+                        </div>
+                        <div class="chat-details-text">
+                            <h4 class="chat-user-name" style="color: var(--color-primary);">گروه شهید ماکان نصیری</h4>
+                            <p class="chat-last-message">سرگروه: جلسه‌ی این هفته روز پنج‌شنبه برگزار میشه.</p>
+                        </div>
+                    </div>
+                    <div class="chat-meta-side">
+                        <span class="chat-time-stamp">۱۸:۴۵</span>
+                        <span class="unread-count-badge" style="background: var(--color-primary); color: black;">۱۵</span>
+                    </div>
+                </article>
+
+                <!-- چت ۳: گروه شهید حسین فهمیده -->
+                <article class="chat-item-card" onclick="openChatConversation('گروه شهید حسین فهمیده')">
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-wrapper">
+                            <div class="chat-avatar-img">گروه</div>
+                        </div>
+                        <div class="chat-details-text">
+                            <h4 class="chat-user-name">گروه شهید حسین فهمیده</h4>
+                            <p class="chat-last-message">امیرعلی: بچه‌ها امتیازات امروز ثبت شد؟</p>
+                        </div>
+                    </div>
+                    <div class="chat-meta-side">
+                        <span class="chat-time-stamp">۱۶:۲۰</span>
+                    </div>
+                </article>
+
+                <!-- چت ۴: محمد کریمی صابر -->
+                <article class="chat-item-card" onclick="openChatConversation('محمد کریمی صابر')">
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-wrapper">
+                            <div class="chat-avatar-img">عکس</div>
+                        </div>
+                        <div class="chat-details-text">
+                            <h4 class="chat-user-name">محمد کریمی صابر</h4>
+                            <p class="chat-last-message">سلام داداش، طرح پوستر جدید آماده شد.</p>
+                        </div>
+                    </div>
+                    <div class="chat-meta-side">
+                        <span class="chat-time-stamp">دیروز</span>
+                    </div>
+                </article>
+
+                <!-- چت ۵: گفت و گو (عمومی) -->
+                <article class="chat-item-card" onclick="openChatConversation('گفت و گو عمومی')">
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-wrapper">
+                            <div class="chat-avatar-img">عمومی</div>
+                            <span class="online-status-dot"></span>
+                        </div>
+                        <div class="chat-details-text">
+                            <h4 class="chat-user-name">گفت و گو</h4>
+                            <p class="chat-last-message">نه تو مسجد روی کولش بود...</p>
+                        </div>
+                    </div>
+                    <div class="chat-meta-side">
+                        <span class="chat-time-stamp">۰۹:۳۶</span>
+                        <span class="unread-count-badge">+۹۹</span>
+                    </div>
+                </article>
+
+                <!-- چت ۶: باشگاه علی لندی -->
+                <article class="chat-item-card" onclick="openChatConversation('باشگاه علی لندی')">
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-wrapper">
+                            <div class="chat-avatar-img">عکس</div>
+                            <span class="online-status-dot"></span>
+                        </div>
+                        <div class="chat-details-text">
+                            <h4 class="chat-user-name">باشگاه علی لندی</h4>
+                            <p class="chat-last-message">سلام من امیر علی هاشمی هستم...</p>
+                        </div>
+                    </div>
+                    <div class="chat-meta-side">
+                        <span class="chat-time-stamp">۲۰:۰۶</span>
+                        <span class="unread-count-badge" style="padding: 2px 9px;">۱</span>
+                    </div>
+                </article>
+
+                <!-- چت ۷: علی دستگیر -->
+                <article class="chat-item-card" onclick="openChatConversation('علی دستگیر')">
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-wrapper">
+                            <div class="chat-avatar-img">عکس</div>
+                        </div>
+                        <div class="chat-details-text">
+                            <h4 class="chat-user-name">علی دستگیر</h4>
+                            <p class="chat-last-message">سبحان اوحدی یک قرار عمومی به نام «دعای ن...</p>
+                        </div>
+                    </div>
+                    <div class="chat-meta-side">
+                        <span class="chat-time-stamp">۱۷:۲۵</span>
+                    </div>
+                </article>
+
+            </section>
+
+        </main>
+        <!-- ========================================================================== -->
+        <!-- صفحه ۳: صفحه اختصاصی گروه من / شهید حسین فهمیده (Group View Engine)         -->
+        <!-- ========================================================================== -->
+        <main id="view-group" class="app-view" data-view-name="group">
+            
+            <!-- بنر قهرمانی و کاور بالای گروه -->
+            <section class="group-hero-banner">
+                <div style="position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(0,210,255,0.2) 0%, rgba(7,18,22,0.85) 100%); z-index: 1;"></div>
+                
+                <div style="position: relative; z-index: 2; text-align: center; padding: 0 20px;">
+                    <div style="width: 70px; height: 70px; margin: 0 auto 10px; border-radius: 50%; border: 3px solid #00d2ff; background: var(--color-bg-card); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0,210,255,0.4);">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    </div>
+                    <h2 class="group-banner-title" style="color: #00d2ff;">شهید حسین فهمیده</h2>
+                    <p style="font-size: 12px; color: var(--color-text-muted); margin-top: 4px;">پیشگامان عرصه ایثار و معرفت</p>
+                </div>
+            </section>
+
+            <!-- اطلاعات سرگروه -->
+            <section style="padding: 15px 20px 5px 20px;">
+                <div class="profile-info-pill-box" style="background: rgba(0, 210, 255, 0.08); border-color: rgba(0, 210, 255, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="badge-label-ribbon" style="width: auto; padding: 4px 12px; border-radius: var(--border-radius-pill); background: #00d2ff; color: black;">سرگروه</span>
+                        <span style="font-size: 13px; font-weight: 800; color: var(--color-text-title);">محمد امین</span>
+                    </div>
+                    <button style="background: transparent; color: #00d2ff; border: 1px solid #00d2ff; padding: 5px 12px; border-radius: var(--border-radius-sm); font-size: 11px; font-weight: 900; cursor: pointer;" onclick="alert('ارسال پیام به سرگروه')">تماس</button>
+                </div>
+            </section>
+
+            <!-- لیست اعضای گروه -->
+            <section style="padding: 0 20px 20px 20px;">
+                
+                <div class="section-title-bar" style="margin-bottom: 15px;">
+                    <h3 style="color: white;">لیست اعضای گروه</h3>
+                    <span style="font-size: 11px; color: #00d2ff; font-weight: 800;">۹ نفر عضو</span>
+                </div>
+
+                <!-- گرید شبکه‌ای اعضا -->
+                <div class="members-grid-container" style="padding: 0;">
+                    
+                    <!-- عضو جدید (واقعی): ایلیا زارعی -->
+                    <article class="member-grid-card" onclick="openUserProfileModal('ایلیا زارعی')" style="border-color: rgba(255, 107, 0, 0.5); background: rgba(255, 107, 0, 0.05);">
+                        <!-- تگ عکس اضافه شد که iliya.jpg رو فراخوانی میکنه -->
+                        <img src="iliya.jpg" alt="ایلیا زارعی" class="member-small-avatar" style="border: 2px solid var(--color-primary); padding: 2px; background: white; object-fit: cover;">
+                        <div>
+                            <h5 class="member-card-name" style="color: var(--color-primary);">ایلیا زارعی</h5>
+                            <span style="font-size: 9px; color: var(--color-text-muted);">عضو فعال و ممتاز</span>
+                        </div>
+                    </article>
+
+                    <!-- عضو ۲: سبحان اوحدی -->
+                    <article class="member-grid-card" onclick="openUserProfileModal('سبحان اوحدی')">
+                        <div class="member-small-avatar">عکس</div>
+                        <div>
+                            <h5 class="member-card-name">سبحان اوحدی</h5>
+                            <span style="font-size: 9px; color: var(--color-text-muted);">عضو فعال</span>
+                        </div>
+                    </article>
+
+                    <!-- عضو ۳: حسین اکبری -->
+                    <article class="member-grid-card" onclick="openUserProfileModal('حسین اکبری')">
+                        <div class="member-small-avatar">عکس</div>
+                        <div>
+                            <h5 class="member-card-name">حسین اکبری</h5>
+                            <span style="font-size: 9px; color: var(--color-text-muted);">عضو فعال</span>
+                        </div>
+                    </article>
+
+                    <!-- بقیه اعضا... -->
+                     <article class="member-grid-card" onclick="openUserProfileModal('امیرعلی استقلال')">
+                        <div class="member-small-avatar">عکس</div>
+                        <div>
+                            <h5 class="member-card-name">امیرعلی استقلال</h5>
+                            <span style="font-size: 9px; color: var(--color-text-muted);">عضو فعال</span>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+        </main>
+                <!-- ========================================================================== -->
+        <!-- منوی شناور و ثابت پایین برنامه (App Bottom Navigation Bar)                  -->
+        <!-- ========================================================================== -->
+        <nav class="app-navigation-bar" aria-label="منوی اصلی برنامه">
+            
+            <!-- تب ۱: پروفایل -->
+            <div class="nav-tab-item" onclick="switchMainTab('profile', this)">
+                <div class="nav-tab-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <span class="nav-tab-label">پروفایل</span>
+            </div>
+
+            <!-- تب ۲: گروه من -->
+            <div class="nav-tab-item" onclick="switchMainTab('group', this)">
+                <div class="nav-tab-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M9 21v-2a4 4 0 0 1 3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <span class="nav-tab-label">گروه من</span>
+            </div>
+
+            <!-- تب ۳: خانه (پیش‌فرض اکتیو) -->
+            <div class="nav-tab-item active-tab" onclick="switchMainTab('home', this)">
+                <div class="nav-tab-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <span class="nav-tab-label">خانه</span>
+            </div>
+
+            <!-- تب ۴: چت‌ها -->
+            <div class="nav-tab-item" onclick="switchMainTab('chats', this)">
+                <div class="nav-tab-icon" style="position: relative;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <!-- نقطه نشانگر پیام جدید روی آیکون منو -->
+                    <span style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #FF3D00; border-radius: 50%; border: 2px solid var(--color-bg-nav);"></span>
+                </div>
+                <span class="nav-tab-label">چت‌ها</span>
+            </div>
+
+        </nav>
+
+        <!-- ========================================================================== -->
+        <!-- پنجره اختصاصی چت زنده آنلاین (Active Live Chat Modal Overlay)              -->
+        <!-- ========================================================================== -->
+        <div id="live-chat-modal" class="glass-panel" style="position: absolute; inset: 0; z-index: var(--z-index-modal); display: none; flex-direction: column; background: var(--color-bg-app); animation: screenSlideUp 0.3s ease;">
+            
+            <!-- هدر چت -->
+            <div style="padding: 15px 20px; background: var(--color-bg-nav); border-bottom: 1px solid var(--border-main); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button onclick="closeLiveChatModal()" style="background: none; border: none; color: var(--color-text-title); cursor: pointer; display: flex; align-items: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-bg-card); border: 1px solid var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--color-text-muted);">
+                        عکس
+                    </div>
+                    <div>
+                        <h4 id="chat-modal-title" style="font-size: 14px; font-weight: 800; color: var(--color-text-title);">بچه زرنگ</h4>
+                        <span style="font-size: 10px; color: #00E676;">آنلاین در کانون</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button style="background: none; border: none; color: var(--color-text-muted); cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg></button>
+                </div>
+            </div>
+
+            <!-- بدنه پیام‌های چت -->
+            <div id="chat-messages-container" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+                
+                <!-- پیام طرف مقابل -->
+                <div style="align-self: flex-start; max-width: 80%; background: var(--color-bg-card); border: 1px solid var(--border-main); padding: 10px 14px; border-radius: 16px 16px 16px 4px;">
+                    <p style="font-size: 13px; color: var(--color-text-title); line-height: 1.5;">سلام! امشب چند دقیقه وقت بگذاریم و گزارش فعالیت‌های گروه رو آماده کنیم.</p>
+                    <span style="font-size: 9px; color: var(--color-text-muted); margin-top: 4px; display: block; text-align: left;">۲۰:۰۰</span>
+                </div>
+
+                <!-- پیام ارسال شده توسط من -->
+                <div style="align-self: flex-end; max-width: 80%; background: var(--color-primary); color: black; padding: 10px 14px; border-radius: 16px 16px 4px 16px; box-shadow: 0 4px 12px var(--color-primary-glow);">
+                    <p style="font-size: 13px; font-weight: 700; line-height: 1.5;">سلام داداش. حتماً! من آمار سکه‌ها و امتیازهای بچه‌های لندی رو آوردم.</p>
+                    <span style="font-size: 9px; color: rgba(0,0,0,0.6); margin-top: 4px; display: block; text-align: left;">۲۰:۰۲</span>
+                </div>
+
+            </div>
+
+            <!-- باکس ارسال پیام -->
+            <div style="padding: 12px 15px; background: var(--color-bg-nav); border-top: 1px solid var(--border-main); display: flex; align-items: center; gap: 10px;">
+                <input type="text" id="chat-input-field" placeholder="پیام خود را بنویسید..." style="flex: 1; background: var(--color-bg-card); border: 1px solid var(--border-main); padding: 12px 16px; border-radius: var(--border-radius-pill); color: white; font-size: 13px; outline: none;">
+                <button onclick="sendChatMessage()" style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-primary); border: none; color: black; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px var(--color-primary-glow);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ========================================================================== -->
+        <!-- مودال مدیریت کیف پول و شارژ حساب (Wallet Drawer Modal)                      -->
+        <!-- ========================================================================== -->
+        <div id="wallet-modal" class="glass-panel" style="position: absolute; inset: 0; z-index: var(--z-index-modal); display: none; flex-direction: column; background: var(--color-bg-app); animation: screenSlideUp 0.3s ease;">
+            
+            <div style="padding: 20px; background: var(--color-bg-nav); border-bottom: 1px solid var(--border-main); display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="font-size: 16px; font-weight: 800; color: #00E676;">مدیریت کیف پول کانون</h3>
+                <button onclick="closeWalletModal()" style="background: none; border: none; color: var(--color-text-muted); font-size: 20px; cursor: pointer;">✕</button>
+            </div>
+
+            <div style="padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- کارت موجودی -->
+                <div class="glass-card" style="padding: 20px; border-radius: var(--border-radius-lg); text-align: center; border-color: rgba(0, 230, 118, 0.4); background: linear-gradient(135deg, rgba(0,230,118,0.1) 0%, rgba(10,24,29,0.9) 100%);">
+                    <span style="font-size: 12px; color: var(--color-text-muted);">موجودی فعلی سکه‌ها</span>
+                    <h2 style="font-size: 32px; font-weight: 900; color: #00E676; margin: 8px 0;">۳,۵۰۰ <small style="font-size: 14px;">سکه</small></h2>
+                    <span style="font-size: 10px; color: var(--color-text-title); background: rgba(0,230,118,0.2); padding: 4px 12px; border-radius: var(--border-radius-pill);">وضعیت حساب: فعال</span>
+                </div>
+
+                <!-- بسته‌های افزایش سکه -->
+                <div>
+                    <h4 style="font-size: 14px; font-weight: 800; color: var(--color-text-title); margin-bottom: 12px;">افزایش سکه و اعتبار:</h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button onclick="chargeWallet(500)" class="glass-card" style="padding: 14px; border-radius: var(--border-radius-md); display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: right; color: white;">
+                            <div>
+                                <strong style="font-size: 14px; display: block; color: var(--color-primary);">بسته ۵۰۰ سکه‌ای</strong>
+                                <span style="font-size: 10px; color: var(--color-text-muted);">ویژه شرکت در مسابقات</span>
+                            </div>
+                            <span style="background: var(--color-primary); color: black; font-weight: 900; padding: 6px 14px; border-radius: var(--border-radius-sm); font-size: 12px;">خرید سکه</span>
+                        </button>
+
+                        <button onclick="chargeWallet(1000)" class="glass-card" style="padding: 14px; border-radius: var(--border-radius-md); display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: right; color: white;">
+                            <div>
+                                <strong style="font-size: 14px; display: block; color: #00d2ff;">بسته ۱۰۰۰ سکه‌ای (طلایی)</strong>
+                                <span style="font-size: 10px; color: var(--color-text-muted);">همراه با ۱۰۰ امتیاز اضافه</span>
+                            </div>
+                            <span style="background: #00d2ff; color: black; font-weight: 900; padding: 6px 14px; border-radius: var(--border-radius-sm); font-size: 12px;">خرید سکه</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- تاریخچه تراکنش‌ها -->
+                <div>
+                    <h4 style="font-size: 14px; font-weight: 800; color: var(--color-text-title); margin-bottom: 12px;">آخرین تراکنش‌ها:</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="background: var(--color-bg-card); padding: 10px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-main); display: flex; justify-content: space-between; font-size: 11px;">
+                            <span>پاداش حضور در نماز جماعت</span>
+                            <span style="color: #00E676; font-weight: 800;">+۲۰۰ سکه</span>
+                        </div>
+                        <div style="background: var(--color-bg-card); padding: 10px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-main); display: flex; justify-content: space-between; font-size: 11px;">
+                            <span>کسب مدال همت</span>
+                            <span style="color: var(--color-primary); font-weight: 800;">+۱۵۰ امتیاز</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- سیستم نوتیفیکیشن و پیام شناور (Toast Container) -->
+        <div id="toast-container" style="position: absolute; top: 20px; left: 20px; right: 20px; z-index: var(--z-index-toast); pointer-events: none; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    </div> <!-- پایان #app-root -->
+
+    <!-- ========================================================================== -->
+    <!-- شروع موتور برنامه نویسی جاوا اسکریپت (JavaScript Core Engine)            -->
+    <!-- ========================================================================== -->
+    <script>
+        /* --------------------------------------------------------------------------
+           داده‌ها و وضعیت‌های برنامه (Global Application State Store)
+           -------------------------------------------------------------------------- */
+        const AppState = {
+            activeView: 'home',
+            userData: {
+                name: 'سبحان اوحدی',
+                group: 'بچه‌های علی لندی',
+                coins: 3850,
+                score: 940,
+                credits: 1250,
+                medals: { diamond: 0, janam: 0, hemmat: 3 }
+            },
+            groups: [
+                { id: 1, name: 'شهید ماکان نصیری', rank: 1, score: '۳.۵۰', membersCount: 12 },
+                { id: 2, name: 'شهید حسین فهمیده', rank: 2, score: '۳.۰۹', membersCount: 10 },
+                { id: 3, name: 'بچه‌های کربلا', rank: 3, score: '۲.۶۷', membersCount: 8 }
+            ]
+        };
+                /* --------------------------------------------------------------------------
+           موتور صوتی اختصاصی (Web Audio API Sound Synthesizer)
+           تولید صدای افکت‌ها بدون نیاز به فایل خارجی برای سرعت برق‌آسا
+           -------------------------------------------------------------------------- */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            playPop() {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.05);
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.05);
+                } catch (e) { console.log('Audio disabled'); }
+            }
+
+            playSend() {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.12);
+                } catch (e) { console.log('Audio disabled'); }
+            }
+        }
+
+        const audioFX = new SoundEngine();
+
+        /* --------------------------------------------------------------------------
+           ۱. تغییر صفحات و تب‌های اصلی (Main Tab Navigation Engine)
+           -------------------------------------------------------------------------- */
+        function switchMainTab(targetViewName, clickedTabElement) {
+            audioFX.playPop();
+
+            // مخفی کردن تمام صفحات
+            const allViews = document.querySelectorAll('.app-view');
+            allViews.forEach(view => {
+                view.classList.remove('active-view');
+            });
+
+            // غیرفعال کردن تمام تب‌های منوی پایین
+            const allTabs = document.querySelectorAll('.nav-tab-item');
+            allTabs.forEach(tab => {
+                tab.classList.remove('active-tab');
+            });
+
+            // فعال‌سازی صفحه مورد نظر
+            const targetView = document.getElementById('view-' + targetViewName);
+            if (targetView) {
+                targetView.classList.add('active-view');
+                AppState.activeView = targetViewName;
+            }
+
+            // فعال‌سازی استایل تب انتخاب شده
+            if (clickedTabElement) {
+                clickedTabElement.classList.add('active-tab');
+            }
+
+            // اگر به صفحه اصلی برگشتیم، انیمیشن شمارش مجدداً اجرا شود
+            if (targetViewName === 'home') {
+                animateNumericCounters();
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           ۲. انیمیشن نرم شمارنده‌های عددی (Coins, Score & Credit Counter)
+           -------------------------------------------------------------------------- */
+        function animateNumericCounters() {
+            const counterElements = document.querySelectorAll('.counter-element');
+            
+            counterElements.forEach(element => {
+                const targetValue = parseInt(element.getAttribute('data-target-value')) || 0;
+                let currentValue = 0;
+                const duration = 1200; // زمان انیمیشن میلی ثانیه
+                const stepTime = 20;
+                const totalSteps = duration / stepTime;
+                const increment = targetValue / totalSteps;
+
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= targetValue) {
+                        element.textContent = targetValue.toLocaleString('fa-IR');
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = Math.floor(currentValue).toLocaleString('fa-IR');
+                    }
+                }, stepTime);
+            });
+        }
+
+        /* --------------------------------------------------------------------------
+           ۳. سیستم نوتیفیکیشن‌های شناور (Toast Notification System)
+           -------------------------------------------------------------------------- */
+        function showToastMessage(message, type = 'success') {
+            audioFX.playPop();
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgGradient = 'linear-gradient(135deg, rgba(16,36,43,0.95) 0%, rgba(7,18,22,0.95) 100%)';
+            let borderColor = 'var(--color-primary)';
+            
+            if (type === 'error') borderColor = '#FF3D00';
+            if (type === 'info') borderColor = '#00d2ff';
+            if (type === 'success') borderColor = '#00E676';
+
+            toast.style.cssText = `
+                background: ${bgGradient};
+                border-right: 4px solid ${borderColor};
+                border-top: 1px solid rgba(255,255,255,0.1);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                border-left: 1px solid rgba(255,255,255,0.1);
+                color: white;
+                padding: 12px 16px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: 700;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+                backdrop-filter: blur(10px);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                animation: screenSlideUp 0.3s ease;
+                pointer-events: auto;
+            `;
+
+            toast.innerHTML = `
+                <span>${message}</span>
+                <span style="color: ${borderColor}; font-size: 14px; margin-right: 8px;">✓</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        /* --------------------------------------------------------------------------
+           ۴. مدیریت سیستم چت زنده و ارسال پیام (Live Messaging Engine)
+           -------------------------------------------------------------------------- */
+        function openChatConversation(userName) {
+            audioFX.playPop();
+            document.getElementById('chat-modal-title').textContent = userName;
+            const chatModal = document.getElementById('live-chat-modal');
+            chatModal.style.display = 'flex';
+        }
+
+        function closeLiveChatModal() {
+            audioFX.playPop();
+            document.getElementById('live-chat-modal').style.display = 'none';
+        }
+
+        function sendChatMessage() {
+            const inputField = document.getElementById('chat-input-field');
+            const messageText = inputField.value.trim();
+
+            if (messageText === '') return;
+
+            audioFX.playSend();
+
+            const messagesContainer = document.getElementById('chat-messages-container');
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            // ساخت پیام ارسال شده توسط کاربر
+            const myMessageHTML = `
+                <div style="align-self: flex-end; max-width: 80%; background: var(--color-primary); color: black; padding: 10px 14px; border-radius: 16px 16px 4px 16px; box-shadow: 0 4px 12px var(--color-primary-glow); animation: screenSlideUp 0.2s ease;">
+                    <p style="font-size: 13px; font-weight: 700; line-height: 1.5;">${messageText}</p>
+                    <span style="font-size: 9px; color: rgba(0,0,0,0.6); margin-top: 4px; display: block; text-align: left;">${timeString}</span>
+                </div>
+            `;
+
+            messagesContainer.insertAdjacentHTML('beforeend', myMessageHTML);
+            inputField.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // شبیه‌سازی پاسخ هوشمند خودکار بعد از ۱.۵ ثانیه
+            setTimeout(() => {
+                audioFX.playPop();
+                const replies = [
+                    "پیام شما دریافت شد، متشکرم!",
+                    "بررسی شد، حتماً در جلسه کانون مطرح می‌کنیم.",
+                    "خدا قوت! امتیاز این بخش برات ثبت شد.",
+                    "عالی بود! یا علی مدد."
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+
+                const botMessageHTML = `
+                    <div style="align-self: flex-start; max-width: 80%; background: var(--color-bg-card); border: 1px solid var(--border-main); padding: 10px 14px; border-radius: 16px 16px 16px 4px; animation: screenSlideUp 0.2s ease;">
+                        <p style="font-size: 13px; color: var(--color-text-title); line-height: 1.5;">${randomReply}</p>
+                        <span style="font-size: 9px; color: var(--color-text-muted); margin-top: 4px; display: block; text-align: left;">${timeString}</span>
+                    </div>
+                `;
+                messagesContainer.insertAdjacentHTML('beforeend', botMessageHTML);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1500);
+        }
+
+        /* --------------------------------------------------------------------------
+           ۵. مدیریت مودال کیف پول و افزایش اعتبار (Wallet & Coins Engine)
+           -------------------------------------------------------------------------- */
+        function openWalletModal() {
+            audioFX.playPop();
+            document.getElementById('wallet-modal').style.display = 'flex';
+        }
+
+        function closeWalletModal() {
+            audioFX.playPop();
+            document.getElementById('wallet-modal').style.display = 'none';
+        }
+
+        function chargeWallet(amount) {
+            AppState.userData.coins += amount;
+            showToastMessage(`حساب شما با موفقیت ${amount} سکه شارژ شد!`, 'success');
+            
+            // به‌روزرسانی مقدار در ظاهر سایت
+            document.querySelectorAll('.badge-numeric-value')[1].setAttribute('data-target-value', AppState.userData.coins);
+            closeWalletModal();
+            animateNumericCounters();
+        }
+
+        /* --------------------------------------------------------------------------
+           ۶. تعامل با مدال‌ها و فیلترها (Interactive Badges & Filters)
+           -------------------------------------------------------------------------- */
+        function triggerBadgeAnimation(element) {
+            audioFX.playPop();
+            element.classList.add('float-effect');
+            setTimeout(() => element.classList.remove('float-effect'), 1000);
+            
+            const badgeType = element.getAttribute('data-badge-type');
+            if (badgeType === 'coin') showToastMessage('موجودی سکه‌های فعال کانون', 'info');
+            if (badgeType === 'credit') showToastMessage('اعتبار کسب شده در فعالیت‌های گروهی', 'info');
+            if (badgeType === 'score') showToastMessage('امتیاز کل کانون فرهنگی', 'info');
+        }
+
+        function filterRankings(filterType, btnElement) {
+            audioFX.playPop();
+            const btns = btnElement.parentElement.querySelectorAll('.chat-tab-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            showToastMessage(`لیست گروه‌ها بر اساس (${btnElement.textContent}) به‌روز شد`);
+        }
+
+        function switchChatTab(tabName, btnElement) {
+            audioFX.playPop();
+            const btns = btnElement.parentElement.querySelectorAll('.chat-tab-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
+
+        function showMedalDetail(medalName, count) {
+            audioFX.playPop();
+            showToastMessage(`مدال ${medalName}: شما دارای ${count} سطح از این نشان هستید`, 'info');
+        }
+
+        function openGroupDetail(groupName, rank) {
+            audioFX.playPop();
+            showToastMessage(`مشاهده اطلاعات گروه «${groupName}» - رتبه ${rank}`, 'info');
+        }
+
+        function openUserProfileModal(userName) {
+            audioFX.playPop();
+            showToastMessage(`مشاهده پروفایل «${userName}»`, 'info');
+        }
+                /* --------------------------------------------------------------------------
+           ۷. سیستم سوایپ لمسی بین تب‌ها (Native Mobile Touch & Swipe Engine)
+           قابلیت جابه‌جایی بین صفحات با کشیدن انگشت روی صفحه
+           -------------------------------------------------------------------------- */
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const viewOrder = ['profile', 'group', 'home', 'chats'];
+
+        function initSwipeEngine() {
+            const appRoot = document.getElementById('app-root');
+
+            appRoot.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            appRoot.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipeGesture();
+            }, { passive: true });
+        }
+
+        function handleSwipeGesture() {
+            const swipeThreshold = 60; // حداقل پیکسل برای تشخیص سوایپ
+            const diffX = touchEndX - touchStartX;
+
+            // اگر توی چت یا مودال کیف پول هستیم سوایپ نکن
+            if (document.getElementById('live-chat-modal').style.display === 'flex' ||
+                document.getElementById('wallet-modal').style.display === 'flex') {
+                return;
+            }
+
+            const currentIndex = viewOrder.indexOf(AppState.activeView);
+
+            // سوایپ به چپ (صفحه بعدی)
+            if (diffX < -swipeThreshold && currentIndex < viewOrder.length - 1) {
+                const nextView = viewOrder[currentIndex + 1];
+                const targetNavTab = document.querySelectorAll('.nav-tab-item')[viewOrder.length - 1 - (currentIndex + 1)];
+                switchMainTab(nextView, targetNavTab);
+            }
+
+            // سوایپ به راست (صفحه قبلی)
+            if (diffX > swipeThreshold && currentIndex > 0) {
+                const prevView = viewOrder[currentIndex - 1];
+                const targetNavTab = document.querySelectorAll('.nav-tab-item')[viewOrder.length - 1 - (currentIndex - 1)];
+                switchMainTab(prevView, targetNavTab);
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           ۸. لیسنر کلید Enter برای باکس چت
+           -------------------------------------------------------------------------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.getElementById('chat-input-field');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        sendChatMessage();
+                    }
+                });
+            }
+        });
+
+        /* --------------------------------------------------------------------------
+           ۹. تشخیص وضعیت اینترنت (Online / Offline Detector)
+           -------------------------------------------------------------------------- */
+        window.addEventListener('online', () => {
+            showToastMessage('اتصال اینترنت برقرار شد ⚡', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            showToastMessage('اتصال اینترنت قطع شد! حالت آفلاین', 'error');
+        });
+
+        /* --------------------------------------------------------------------------
+           ۱۰. راه‌اندازی اولیه و رویداد آماده‌سازی اپلیکیشن (App Initialization)
+           -------------------------------------------------------------------------- */
+        window.addEventListener('load', () => {
+            // ۱. راه‌اندازی موتور سوایپ لمسی
+            initSwipeEngine();
+
+            // ۲. اجرای انیمیشن شمارش اعداد در لود اول
+            animateNumericCounters();
+
+            // ۳. نمایش پیام خوش‌آمدگویی با افکت صوتی
+            setTimeout(() => {
+                showToastMessage('به وب‌اپلیکیشن کانون حسینیه خوش آمدید 🚀', 'success');
+            }, 800);
+
+            // ۴. فعال‌سازی موتور صوتی با اولین کلیک کاربر روی صفحه
+            document.body.addEventListener('click', () => {
+                audioFX.init();
+            }, { once: true });
+        });
+                /* ========================================================================== */
+        /* منطق و ذخیره‌سازی پنل مدیریت (رمز 1385 و ذخیره در LocalStorage)            */
+        /* ========================================================================== */
+        function openAdminLogin() {
+            document.getElementById('admin-login-overlay').classList.add('show');
+            document.getElementById('admin-pass-input').value = '';
+            document.getElementById('admin-pass-input').focus();
+        }
+
+        function closeAdminOverlay() {
+            document.getElementById('admin-login-overlay').classList.remove('show');
+            document.getElementById('admin-panel-overlay').classList.remove('show');
+        }
+
+        function verifyAdminPass() {
+            const pass = document.getElementById('admin-pass-input').value;
+            if (pass === '1385') {
+                document.getElementById('admin-login-overlay').classList.remove('show');
+                document.getElementById('admin-panel-overlay').classList.add('show');
+                showToastMessage('ورود با موفقیت انجام شد 🔓', 'success');
+            } else {
+                showToastMessage('رمز عبور اشتباه است! ❌', 'error');
+            }
+        }
+
+        function switchAdminTab(tabId, btn) {
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function saveAdminChanges() {
+            // دریافت مقادیر فرم ادمین
+            const siteTitle = document.getElementById('adm-site-title').value;
+            const siteSub = document.getElementById('adm-site-sub').value;
+            const seasonTag = document.getElementById('adm-season-tag').value;
+            
+            const coins = document.getElementById('adm-coins').value;
+            const score = document.getElementById('adm-score').value;
+            const credit = document.getElementById('adm-credit').value;
+
+            const g1Name = document.getElementById('adm-g1-name').value;
+            const g1Score = document.getElementById('adm-g1-score').value;
+            const g2Name = document.getElementById('adm-g2-name').value;
+            const g2Score = document.getElementById('adm-g2-score').value;
+
+            // ساخت پکیج داده برای ذخیره دائمی
+            const adminData = {
+                siteTitle, siteSub, seasonTag,
+                coins, score, credit,
+                g1Name, g1Score, g2Name, g2Score
+            };
+
+            localStorage.setItem('kanun_admin_data', JSON.stringify(adminData));
+            applyAdminDataToSite(adminData);
+            showToastMessage('تغییرات با موفقیت روی کل سایت اعمال شد 💾', 'success');
+            closeAdminOverlay();
+        }
+
+        function applyAdminDataToSite(data) {
+            if (!data) return;
+            
+            // اعمال تغییرات روی ظاهر سایت
+            if (data.siteTitle) document.querySelector('.main-title').childNodes[0].nodeValue = data.siteTitle + ' ';
+            if (data.siteSub) document.querySelector('.sub-title').textContent = data.siteSub;
+            if (data.seasonTag) document.querySelector('.header-badge').textContent = data.seasonTag;
+
+            if (data.coins) document.querySelectorAll('.badge-numeric-value')[1].setAttribute('data-target-value', data.coins);
+            if (data.score) document.querySelectorAll('.badge-numeric-value')[2].setAttribute('data-target-value', data.score);
+            if (data.credit) document.querySelectorAll('.badge-numeric-value')[0].setAttribute('data-target-value', data.credit);
+
+            if (data.g1Name) document.querySelectorAll('.group-name')[0].textContent = data.g1Name;
+            if (data.g2Name) document.querySelectorAll('.group-name')[1].textContent = data.g2Name;
+
+            animateNumericCounters();
+        }
+
+        function addNewMemberFromAdmin() {
+            const memberName = document.getElementById('adm-new-member-name').value;
+            if (!memberName) {
+                showToastMessage('لطفاً نام عضو را وارد کنید', 'error');
+                return;
+            }
+
+            const membersContainer = document.querySelector('.members-grid-container');
+            const newMemberHTML = `
+                <article class="member-grid-card" onclick="openUserProfileModal('${memberName}')">
+                    <div class="member-small-avatar">عکس</div>
+                    <div>
+                        <h5 class="member-card-name">${memberName}</h5>
+                        <span style="font-size: 9px; color: var(--color-primary);">عضو جدید ادمین</span>
+                    </div>
+                </article>
+            `;
+            membersContainer.insertAdjacentHTML('beforeend', newMemberHTML);
+            document.getElementById('adm-new-member-name').value = '';
+            showToastMessage(`عضو جدید (${memberName}) اضافه شد ✅`, 'success');
+            closeAdminOverlay();
+        }
+
+        // بارگذاری داده‌های ذخیره‌شده ادمین هنگام باز شدن سایت
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedData = localStorage.getItem('kanun_admin_data');
+            if (savedData) {
+                applyAdminDataToSite(JSON.parse(savedData));
+            }
+        });
+    </script>
+        <!-- دکمه ورود به ادمین (شناور بالای صفحه) -->
+    <button onclick="openAdminLogin()" style="position: fixed; top: 15px; left: 15px; z-index: 9999; background: rgba(255,107,0,0.2); border: 1px solid #FF6B00; color: #FF6B00; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 900; cursor: pointer;">🔐 ورود ادمین</button>
+
+    <!-- پنجره ورود با رمز ۱۳۸۵ -->
+    <div id="admin-login-overlay">
+        <div class="admin-box">
+            <h3 style="color: #FF6B00; margin-bottom: 10px;">ورود به پنل مدیریت کانون</h3>
+            <p style="color: #8ca3ab; font-size: 12px; margin-bottom: 20px;">رمز عبور ادمین را وارد کنید</p>
+            <input type="password" id="admin-pass-input" placeholder="رمز عبور..." style="width: 100%; padding: 12px; background: #071216; border: 1px solid #1e3a44; border-radius: 10px; color: white; text-align: center; font-size: 18px; margin-bottom: 15px; outline: none;">
+            <div style="display: flex; gap: 10px;">
+                <button onclick="verifyAdminPass()" class="admin-save-btn" style="flex: 1;">ورود</button>
+                <button onclick="closeAdminOverlay()" style="background: #1e3a44; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer;">انصراف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- داشبورد اصلی ادمین برای تغییر تمام اجزای سایت -->
+    <div id="admin-panel-overlay">
+        <div class="admin-dashboard">
+            <div class="admin-dash-header">
+                <h3 style="color: #FF6B00; margin: 0;">⚡ پنل مدیریت هوشمند کانون</h3>
+                <button onclick="closeAdminOverlay()" style="background: #FF3D00; color: white; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: 900;">بستن ✕</button>
+            </div>
+            
+            <div class="admin-dash-body">
+                <div class="admin-nav">
+                    <button class="admin-nav-btn active" onclick="switchAdminTab('tab-general', this)">⚙️ عمومی و تیترها</button>
+                    <button class="admin-nav-btn" onclick="switchAdminTab('tab-user', this)">👤 امتیازات کاربران</button>
+                    <button class="admin-nav-btn" onclick="switchAdminTab('tab-groups', this)">🏆 رتبه‌بندی گروه‌ها</button>
+                    <button class="admin-nav-btn" onclick="switchAdminTab('tab-add-member', this)">➕ افزودن عضو جدید</button>
+                </div>
+
+                <!-- تب ۱: تنظیمات عمومی -->
+                <div id="tab-general" class="admin-tab-content active">
+                    <h4 style="color: white; margin-bottom: 15px;">ویرایش عناوین اصلی سایت</h4>
+                    <div class="admin-field">
+                        <label>عنوان کانون (تیتر اصلی):</label>
+                        <input type="text" id="adm-site-title" value="حسینیه چهارده معصوم">
+                    </div>
+                    <div class="admin-field">
+                        <label>زیرعنوان کانون:</label>
+                        <input type="text" id="adm-site-sub" value="تشکل نوجوانان - کانون فرهنگی">
+                    </div>
+                    <div class="admin-field">
+                        <label>نام فصل / بج بالای سایت:</label>
+                        <input type="text" id="adm-season-tag" value="فصل پاییز">
+                    </div>
+                    <button class="admin-save-btn" onclick="saveAdminChanges()">ذخیره تغییرات عمومی 💾</button>
+                </div>
+
+                <!-- تب ۲: امتیازات کاربر -->
+                <div id="tab-user" class="admin-tab-content">
+                    <h4 style="color: white; margin-bottom: 15px;">ویرایش سکه‌ها و امتیازات کاربر اصلی (سبحان)</h4>
+                    <div class="admin-field">
+                        <label>تعداد سکه‌ها:</label>
+                        <input type="number" id="adm-coins" value="3850">
+                    </div>
+                    <div class="admin-field">
+                        <label>تعداد امتیازات:</label>
+                        <input type="number" id="adm-score" value="940">
+                    </div>
+                    <div class="admin-field">
+                        <label>تعداد اعتبار:</label>
+                        <input type="number" id="adm-credit" value="1250">
+                    </div>
+                    <button class="admin-save-btn" onclick="saveAdminChanges()">ذخیره امتیازات 💾</button>
+                </div>
+
+                <!-- تب ۳: رتبه‌بندی گروه‌ها -->
+                <div id="tab-groups" class="admin-tab-content">
+                    <h4 style="color: white; margin-bottom: 15px;">ویرایش اسامی و امتیازات گروه‌ها</h4>
+                    <div class="admin-field">
+                        <label>نام گروه اول:</label>
+                        <input type="text" id="adm-g1-name" value="شهید ماکان نصیری">
+                    </div>
+                    <div class="admin-field">
+                        <label>امتیاز گروه اول:</label>
+                        <input type="text" id="adm-g1-score" value="۳.۵۰ امتیاز">
+                    </div>
+                    <hr style="border-color: #1e3a44; margin: 15px 0;">
+                    <div class="admin-field">
+                        <label>نام گروه دوم:</label>
+                        <input type="text" id="adm-g2-name" value="شهید حسین فهمیده">
+                    </div>
+                    <div class="admin-field">
+                        <label>امتیاز گروه دوم:</label>
+                        <input type="text" id="adm-g2-score" value="۳.۰۹ امتیاز">
+                    </div>
+                    <button class="admin-save-btn" onclick="saveAdminChanges()">ذخیره گروه‌ها 💾</button>
+                </div>
+
+                <!-- تب ۴: افزودن عضو -->
+                <div id="tab-add-member" class="admin-tab-content">
+                    <h4 style="color: white; margin-bottom: 15px;">افزودن عضو جدید به گروه</h4>
+                    <div class="admin-field">
+                        <label>نام و نام خانوادگی عضو جدید:</label>
+                        <input type="text" id="adm-new-member-name" placeholder="مثلاً: علی محمدی">
+                    </div>
+                    <div class="admin-field">
+                        <label>گروه مربوطه:</label>
+                        <select id="adm-new-member-group">
+                            <option value="1">شهید حسین فهمیده</option>
+                            <option value="2">شهید ماکان نصیری</option>
+                        </select>
+                    </div>
+                    <button class="admin-save-btn" onclick="addNewMemberFromAdmin()">افزودن عضو ➕</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
